@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { templates } from "@/data/templates";
-import TemplateCard from "@/components/templates/TemplateCard";
-import { Navbar } from "@/components/landing/LandingSections";
+import TemplateCard from "@/components/TemplateCard";
+import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
