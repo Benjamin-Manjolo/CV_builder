@@ -1,24 +1,36 @@
-import { jsPDF } from 'jspdf';
-import html2pdf from 'html2pdf.js';
+import html2pdf from "html2pdf.js";
 
-// Function to export HTML content to PDF
-export const exportToPDF = (elementId, filename) => {
-    const element = document.getElementById(elementId);
-    if (!element) {
-        console.error(`Element with ID ${elementId} not found.`);
-        return;
-    }
+export const exportToPDF = async (
+  elementId: string,
+  filename: string
+) => {
+  console.log('📄 exportToPDF called with', { elementId, filename });
+  const element = document.getElementById(elementId);
+  console.log('🔍 Element found:', element);
+  if (!element) {
+    console.error(`Element with ID ${elementId} not found.`);
+    throw new Error("Element not found");
+  }
+   console.log('⚙️ Starting html2pdf generation...');
+  const opt = {
+    margin: 0.5,
+    filename: filename,
+    image: { type: "jpeg" as const, quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+    },
+    jsPDF: {
+      unit: "in" as const,
+      format: "letter" as const,
+      orientation: "portrait" as const, // ✅ Add 'as const'
+    },
+  };
 
-    const opt = {
-        margin:       1,
-        filename:     filename,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
-
-    // Use html2pdf to convert HTML to PDF
-    // Uncomment the line below if using newer version of html2pdf
-    // html2pdf().from(element).set(opt).save();
-    html2pdf(element, opt);
+  await html2pdf()
+    .set(opt)
+    .from(element)
+    .save();
+     console.log('✅ PDF saved successfully');
 };

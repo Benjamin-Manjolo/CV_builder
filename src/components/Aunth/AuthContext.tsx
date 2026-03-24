@@ -16,13 +16,13 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
-
 const STORAGE_KEY = "craftcv_user";
 
 // Simulated user store (in a real app this would be a backend call)
 const getUserStore = (): Record<string, { password: string; user: User }> => {
   try {
-    return JSON.parse(localStorage.getItem("craftcv_user_store") || "{}");
+    const stored = localStorage.getItem("craftcv_user_store");
+    return stored ? JSON.parse(stored) : {};
   } catch {
     return {};
   }
@@ -50,8 +50,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await new Promise((r) => setTimeout(r, 600)); // simulate network
     const store = getUserStore();
     const entry = store[email.toLowerCase()];
+    
     if (!entry) return { error: "No account found with that email." };
     if (entry.password !== password) return { error: "Incorrect password." };
+    
     setUser(entry.user);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entry.user));
     return {};
@@ -60,13 +62,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signup = useCallback(async (name: string, email: string, password: string): Promise<{ error?: string }> => {
     await new Promise((r) => setTimeout(r, 600));
     const store = getUserStore();
+    
     if (store[email.toLowerCase()]) return { error: "An account with that email already exists." };
+    
     const newUser: User = {
       id: crypto.randomUUID(),
       email: email.toLowerCase(),
       name,
       plan: "free",
     };
+    
     store[email.toLowerCase()] = { password, user: newUser };
     saveUserStore(store);
     setUser(newUser);

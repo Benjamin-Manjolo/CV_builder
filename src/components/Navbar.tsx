@@ -21,8 +21,17 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState<"login" | "signup">("login");
 
-  const openLogin = () => { setAuthTab("login"); setAuthOpen(true); onLoginClick?.(); };
-  const openSignup = () => { setAuthTab("signup"); setAuthOpen(true); onLoginClick?.(); };
+  const openLogin = () => {
+    setAuthTab("login");
+    setAuthOpen(true);
+    onLoginClick?.();
+  };
+  
+  const openSignup = () => {
+    setAuthTab("signup");
+    setAuthOpen(true);
+    onLoginClick?.();
+  };
 
   return (
     <>
@@ -32,6 +41,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
             <FileText className="h-6 w-6 text-primary" />
             <span className="font-heading text-xl font-bold text-foreground">CraftCV</span>
           </Link>
+          
           <div className="hidden md:flex items-center gap-8">
             <Link to="/templates" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Templates
@@ -43,6 +53,7 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
               Pricing
             </a>
           </div>
+          
           <div className="flex items-center gap-3">
             {user ? (
               <DropdownMenu>
@@ -86,4 +97,3 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
 };
 
 export default Navbar;
-
