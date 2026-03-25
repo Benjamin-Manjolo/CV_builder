@@ -1,9 +1,14 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 
+interface AuthResult {
+  error?: string;
+}
+
 interface AuthContextType {
   user: Record<string, unknown> | null;
   signUp: (credentials: Record<string, unknown>) => Promise<void>;
-  login: (credentials: Record<string, unknown>) => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<AuthResult>;
+  login: (email: string, password?: string) => Promise<AuthResult>;
   logout: () => void;
 }
 
@@ -16,8 +21,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(credentials);
   };
 
-  const login = async (credentials: Record<string, unknown>) => {
-    setUser(credentials);
+  const signup = async (name: string, email: string, password: string): Promise<AuthResult> => {
+    setUser({ name, email });
+    return {};
+  };
+
+  const login = async (email: string, password?: string): Promise<AuthResult> => {
+    setUser({ email });
+    return {};
   };
 
   const logout = () => {
@@ -25,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, signUp, login, logout }}>
+    <AuthContext.Provider value={{ user, signUp, signup, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
