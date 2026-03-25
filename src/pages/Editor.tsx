@@ -6,7 +6,20 @@ import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, Download, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Save, Download, Plus, Trash2 } from "lucide-react";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import SectionAccordion from "@/components/editor/SectionAccordion";
+import CVPreview from "@/components/editor/CVPreview";
+import { downloadCVAsPDF } from "@/components/PdfDownload";
+
+const SECTION_CONFIG = [
+  { id: "header", title: "Personal Info" },
+  { id: "summary", title: "Summary" },
+  { id: "experience", title: "Work Experience" },
+  { id: "education", title: "Education" },
+  { id: "skills", title: "Skills" },
+];
 
 const EditorPage = () => {
   const [searchParams] = useSearchParams();
@@ -18,13 +31,15 @@ const EditorPage = () => {
   );
   const [docTitle, setDocTitle] = useState("My CV");
   const [saveStatus, setSaveStatus] = useState<"saved" | "unsaved">("saved");
+  const [sectionOrder, setSectionOrder] = useState(SECTION_CONFIG.map((s) => s.id));
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    header: true,
-    summary: true,
-    experience: true,
-    education: false,
-    skills: false,
+    header: true, summary: true, experience: true, education: false, skills: false,
   });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
 
   const toggleSection = (s: string) =>
     setExpandedSections((prev) => ({ ...prev, [s]: !prev[s] }));
@@ -48,38 +63,26 @@ const EditorPage = () => {
   const addExperience = () => {
     setContent((prev) => ({
       ...prev,
-      experience: [
-        ...prev.experience,
-        { id: crypto.randomUUID(), company: "", role: "", startDate: "", endDate: "", bullets: [""] },
-      ],
+      experience: [...prev.experience, { id: crypto.randomUUID(), company: "", role: "", startDate: "", endDate: "", bullets: [""] }],
     }));
     markUnsaved();
   };
 
   const removeExperience = (idx: number) => {
-    setContent((prev) => ({
-      ...prev,
-      experience: prev.experience.filter((_, i) => i !== idx),
-    }));
+    setContent((prev) => ({ ...prev, experience: prev.experience.filter((_, i) => i !== idx) }));
     markUnsaved();
   };
 
   const addEducation = () => {
     setContent((prev) => ({
       ...prev,
-      education: [
-        ...prev.education,
-        { id: crypto.randomUUID(), institution: "", degree: "", field: "", year: "" },
-      ],
+      education: [...prev.education, { id: crypto.randomUUID(), institution: "", degree: "", field: "", year: "" }],
     }));
     markUnsaved();
   };
 
   const removeEducation = (idx: number) => {
-    setContent((prev) => ({
-      ...prev,
-      education: prev.education.filter((_, i) => i !== idx),
-    }));
+    setContent((prev) => ({ ...prev, education: prev.education.filter((_, i) => i !== idx) }));
     markUnsaved();
   };
 
@@ -94,7 +97,22 @@ const EditorPage = () => {
 
   const handleSave = () => setSaveStatus("saved");
 
-  // Auto-save simulation
+  const handleDownloadPDF = () => {
+    const themeColor = template?.theme.primaryColor || "#7c2d36";
+    downloadCVAsPDF(content, themeColor, docTitle);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setSectionOrder((prev) => {
+        const oldIndex = prev.indexOf(active.id as string);
+        const newIndex = prev.indexOf(over.id as string);
+        return arrayMove(prev, oldIndex, newIndex);
+      });
+    }
+  };
+
   useEffect(() => {
     if (saveStatus !== "unsaved") return;
     const t = setTimeout(() => setSaveStatus("saved"), 30000);
@@ -102,6 +120,95 @@ const EditorPage = () => {
   }, [saveStatus, content]);
 
   const themeColor = template?.theme.primaryColor || "#7c2d36";
+  const orderedSections = sectionOrder.map((id) => SECTION_CONFIG.find((s) => s.id === id)!);
+
+  const renderSectionContent = (sectionId: string) => {
+    switch (sectionId) {
+      case "header":
+        return (
+          <div className="space-y-3">
+            <Input placeholder="Full Name" value={content.header.name} onChange={(e) => updateHeader("name", e.target.value)} />
+            <Input placeholder="Professional Title" value={content.header.title} onChange={(e) => updateHeader("title", e.target.value)} />
+            <div className="grid grid-cols-2 gap-3">
+              <Input placeholder="Email" value={content.header.email} onChange={(e) => updateHeader("email", e.target.value)} />
+              <Input placeholder="Phone" value={content.header.phone} onChange={(e) => updateHeader("phone", e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <Input placeholder="Location" value={content.header.location} onChange={(e) => updateHeader("location", e.target.value)} />
+              <Input placeholder="LinkedIn" value={content.header.linkedin || ""} onChange={(e) => updateHeader("linkedin", e.target.value)} />
+            </div>
+          </div>
+        );
+      case "summary":
+        return (
+          <Textarea
+            placeholder="Professional summary..."
+            value={content.summary}
+            onChange={(e) => { setContent((p) => ({ ...p, summary: e.target.value })); markUnsaved(); }}
+            rows={4}
+          />
+        );
+      case "experience":
+        return (
+          <div className="space-y-4">
+            {content.experience.map((exp, idx) => (
+              <div key={exp.id} className="bg-secondary/50 rounded-lg p-3 space-y-2 relative">
+                <button onClick={() => removeExperience(idx)} className="absolute top-2 right-2 text-muted-foreground hover:text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+                <Input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(idx, "company", e.target.value)} />
+                <Input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(idx, "role", e.target.value)} />
+                <div className="grid grid-cols-2 gap-2">
+                  <Input placeholder="Start Date" value={exp.startDate} onChange={(e) => updateExperience(idx, "startDate", e.target.value)} />
+                  <Input placeholder="End Date" value={exp.endDate} onChange={(e) => updateExperience(idx, "endDate", e.target.value)} />
+                </div>
+                <Textarea
+                  placeholder="Achievements (one per line)"
+                  value={exp.bullets.join("\n")}
+                  onChange={(e) => updateExperience(idx, "bullets", e.target.value.split("\n"))}
+                  rows={3}
+                />
+              </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={addExperience} className="w-full">
+              <Plus className="h-4 w-4 mr-1" /> Add Experience
+            </Button>
+          </div>
+        );
+      case "education":
+        return (
+          <div className="space-y-4">
+            {content.education.map((edu, idx) => (
+              <div key={edu.id} className="bg-secondary/50 rounded-lg p-3 space-y-2 relative">
+                <button onClick={() => removeEducation(idx)} className="absolute top-2 right-2 text-muted-foreground hover:text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                </button>
+                <Input placeholder="Institution" value={edu.institution} onChange={(e) => updateEducation(idx, "institution", e.target.value)} />
+                <div className="grid grid-cols-2 gap-2">
+                  <Input placeholder="Degree" value={edu.degree} onChange={(e) => updateEducation(idx, "degree", e.target.value)} />
+                  <Input placeholder="Field" value={edu.field} onChange={(e) => updateEducation(idx, "field", e.target.value)} />
+                </div>
+                <Input placeholder="Year" value={edu.year} onChange={(e) => updateEducation(idx, "year", e.target.value)} />
+              </div>
+            ))}
+            <Button variant="outline" size="sm" onClick={addEducation} className="w-full">
+              <Plus className="h-4 w-4 mr-1" /> Add Education
+            </Button>
+          </div>
+        );
+      case "skills":
+        return (
+          <Textarea
+            placeholder="Skills (comma-separated)"
+            value={content.skills.join(", ")}
+            onChange={(e) => { setContent((p) => ({ ...p, skills: e.target.value.split(",").map((s) => s.trim()) })); markUnsaved(); }}
+            rows={3}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -121,7 +228,7 @@ const EditorPage = () => {
             <Button variant="outline" size="sm" onClick={handleSave}>
               <Save className="h-4 w-4 mr-1" /> Save
             </Button>
-            <Button variant="hero" size="sm">
+            <Button variant="hero" size="sm" onClick={handleDownloadPDF}>
               <Download className="h-4 w-4 mr-1" /> Download PDF
             </Button>
           </div>
@@ -133,97 +240,27 @@ const EditorPage = () => {
         <div className="flex flex-col lg:flex-row w-full container mx-auto gap-6 p-4 pb-16">
           {/* Left: Edit panel */}
           <div className="lg:w-[420px] shrink-0 space-y-3 overflow-y-auto max-h-[calc(100vh-8rem)]">
-            {/* Header Section */}
-            <SectionAccordion title="Personal Info" expanded={expandedSections.header} onToggle={() => toggleSection("header")}>
-              <div className="space-y-3">
-                <Input placeholder="Full Name" value={content.header.name} onChange={(e) => updateHeader("name", e.target.value)} />
-                <Input placeholder="Professional Title" value={content.header.title} onChange={(e) => updateHeader("title", e.target.value)} />
-                <div className="grid grid-cols-2 gap-3">
-                  <Input placeholder="Email" value={content.header.email} onChange={(e) => updateHeader("email", e.target.value)} />
-                  <Input placeholder="Phone" value={content.header.phone} onChange={(e) => updateHeader("phone", e.target.value)} />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Input placeholder="Location" value={content.header.location} onChange={(e) => updateHeader("location", e.target.value)} />
-                  <Input placeholder="LinkedIn" value={content.header.linkedin || ""} onChange={(e) => updateHeader("linkedin", e.target.value)} />
-                </div>
-              </div>
-            </SectionAccordion>
-
-            {/* Summary */}
-            <SectionAccordion title="Summary" expanded={expandedSections.summary} onToggle={() => toggleSection("summary")}>
-              <Textarea
-                placeholder="Professional summary..."
-                value={content.summary}
-                onChange={(e) => { setContent((p) => ({ ...p, summary: e.target.value })); markUnsaved(); }}
-                rows={4}
-              />
-            </SectionAccordion>
-
-            {/* Experience */}
-            <SectionAccordion title="Work Experience" expanded={expandedSections.experience} onToggle={() => toggleSection("experience")}>
-              <div className="space-y-4">
-                {content.experience.map((exp, idx) => (
-                  <div key={exp.id} className="bg-secondary/50 rounded-lg p-3 space-y-2 relative">
-                    <button onClick={() => removeExperience(idx)} className="absolute top-2 right-2 text-muted-foreground hover:text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                    <Input placeholder="Company" value={exp.company} onChange={(e) => updateExperience(idx, "company", e.target.value)} />
-                    <Input placeholder="Role" value={exp.role} onChange={(e) => updateExperience(idx, "role", e.target.value)} />
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input placeholder="Start Date" value={exp.startDate} onChange={(e) => updateExperience(idx, "startDate", e.target.value)} />
-                      <Input placeholder="End Date" value={exp.endDate} onChange={(e) => updateExperience(idx, "endDate", e.target.value)} />
-                    </div>
-                    <Textarea
-                      placeholder="Achievements (one per line)"
-                      value={exp.bullets.join("\n")}
-                      onChange={(e) => updateExperience(idx, "bullets", e.target.value.split("\n"))}
-                      rows={3}
-                    />
-                  </div>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
+                {orderedSections.map((section) => (
+                  <SectionAccordion
+                    key={section.id}
+                    id={section.id}
+                    title={section.title}
+                    expanded={expandedSections[section.id]}
+                    onToggle={() => toggleSection(section.id)}
+                  >
+                    {renderSectionContent(section.id)}
+                  </SectionAccordion>
                 ))}
-                <Button variant="outline" size="sm" onClick={addExperience} className="w-full">
-                  <Plus className="h-4 w-4 mr-1" /> Add Experience
-                </Button>
-              </div>
-            </SectionAccordion>
-
-            {/* Education */}
-            <SectionAccordion title="Education" expanded={expandedSections.education} onToggle={() => toggleSection("education")}>
-              <div className="space-y-4">
-                {content.education.map((edu, idx) => (
-                  <div key={edu.id} className="bg-secondary/50 rounded-lg p-3 space-y-2 relative">
-                    <button onClick={() => removeEducation(idx)} className="absolute top-2 right-2 text-muted-foreground hover:text-destructive">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                    <Input placeholder="Institution" value={edu.institution} onChange={(e) => updateEducation(idx, "institution", e.target.value)} />
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input placeholder="Degree" value={edu.degree} onChange={(e) => updateEducation(idx, "degree", e.target.value)} />
-                      <Input placeholder="Field" value={edu.field} onChange={(e) => updateEducation(idx, "field", e.target.value)} />
-                    </div>
-                    <Input placeholder="Year" value={edu.year} onChange={(e) => updateEducation(idx, "year", e.target.value)} />
-                  </div>
-                ))}
-                <Button variant="outline" size="sm" onClick={addEducation} className="w-full">
-                  <Plus className="h-4 w-4 mr-1" /> Add Education
-                </Button>
-              </div>
-            </SectionAccordion>
-
-            {/* Skills */}
-            <SectionAccordion title="Skills" expanded={expandedSections.skills} onToggle={() => toggleSection("skills")}>
-              <Textarea
-                placeholder="Skills (comma-separated)"
-                value={content.skills.join(", ")}
-                onChange={(e) => { setContent((p) => ({ ...p, skills: e.target.value.split(",").map((s) => s.trim()) })); markUnsaved(); }}
-                rows={3}
-              />
-            </SectionAccordion>
+              </SortableContext>
+            </DndContext>
           </div>
 
           {/* Right: Live preview */}
           <div className="flex-1 flex justify-center">
             <div className="w-full max-w-[600px] bg-background shadow-elevated rounded-lg border p-8 overflow-y-auto max-h-[calc(100vh-8rem)]">
-              <CVPreview content={content} themeColor={themeColor} />
+              <CVPreview content={content} themeColor={themeColor} sectionOrder={sectionOrder} />
             </div>
           </div>
         </div>
@@ -231,121 +268,5 @@ const EditorPage = () => {
     </div>
   );
 };
-
-const SectionAccordion = ({
-  title,
-  expanded,
-  onToggle,
-  children,
-}: {
-  title: string;
-  expanded: boolean;
-  onToggle: () => void;
-  children: React.ReactNode;
-}) => (
-  <div className="bg-background border rounded-lg overflow-hidden">
-    <button
-      onClick={onToggle}
-      className="w-full flex items-center justify-between px-4 py-3 hover:bg-secondary/50 transition-colors"
-    >
-      <span className="font-heading font-semibold text-sm text-foreground">{title}</span>
-      {expanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-    </button>
-    {expanded && <div className="px-4 pb-4">{children}</div>}
-  </div>
-);
-
-const CVPreview = ({ content, themeColor }: { content: CVContent; themeColor: string }) => (
-  <div className="font-body text-sm leading-relaxed" style={{ fontFamily: "DM Sans, sans-serif" }}>
-    {/* Header */}
-    <div className="text-center mb-6 pb-4" style={{ borderBottom: `2px solid ${themeColor}` }}>
-      <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: "Playfair Display, serif", color: themeColor }}>
-        {content.header.name || "Your Name"}
-      </h1>
-      <p className="text-base text-muted-foreground mb-2">{content.header.title || "Professional Title"}</p>
-      <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        {content.header.email && <span>{content.header.email}</span>}
-        {content.header.phone && <span>{content.header.phone}</span>}
-        {content.header.location && <span>{content.header.location}</span>}
-        {content.header.linkedin && <span>{content.header.linkedin}</span>}
-      </div>
-    </div>
-
-    {/* Summary */}
-    {content.summary && (
-      <div className="mb-5">
-        <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: themeColor }}>
-          Professional Summary
-        </h2>
-        <p className="text-muted-foreground">{content.summary}</p>
-      </div>
-    )}
-
-    {/* Experience */}
-    {content.experience.length > 0 && (
-      <div className="mb-5">
-        <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: themeColor }}>
-          Experience
-        </h2>
-        <div className="space-y-4">
-          {content.experience.map((exp) => (
-            <div key={exp.id}>
-              <div className="flex justify-between items-baseline">
-                <h3 className="font-semibold text-foreground">{exp.role || "Role"}</h3>
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
-                  {exp.startDate} — {exp.endDate}
-                </span>
-              </div>
-              <p className="text-muted-foreground text-xs mb-1">{exp.company || "Company"}</p>
-              <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
-                {exp.bullets.filter(Boolean).map((b, i) => (
-                  <li key={i}>{b}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
-
-    {/* Education */}
-    {content.education.length > 0 && (
-      <div className="mb-5">
-        <h2 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: themeColor }}>
-          Education
-        </h2>
-        {content.education.map((edu) => (
-          <div key={edu.id} className="flex justify-between items-baseline">
-            <div>
-              <h3 className="font-semibold text-foreground">{edu.degree} in {edu.field}</h3>
-              <p className="text-xs text-muted-foreground">{edu.institution}</p>
-            </div>
-            <span className="text-xs text-muted-foreground">{edu.year}</span>
-          </div>
-        ))}
-      </div>
-    )}
-
-    {/* Skills */}
-    {content.skills.filter(Boolean).length > 0 && (
-      <div>
-        <h2 className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: themeColor }}>
-          Skills
-        </h2>
-        <div className="flex flex-wrap gap-2">
-          {content.skills.filter(Boolean).map((skill, i) => (
-            <span
-              key={i}
-              className="text-xs px-2.5 py-1 rounded-full"
-              style={{ backgroundColor: themeColor + "15", color: themeColor }}
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
-      </div>
-    )}
-  </div>
-);
 
 export default EditorPage;

@@ -1,34 +1,38 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
-const AuthContext = createContext();
+interface AuthContextType {
+  user: Record<string, unknown> | null;
+  signUp: (credentials: Record<string, unknown>) => Promise<void>;
+  login: (credentials: Record<string, unknown>) => Promise<void>;
+  logout: () => void;
+}
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-    const signUp = async (credentials) => {
-        // Logic for sign up (e.g., API call)
-        // On success, update user state
-        setUser(credentials);
-    };
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<Record<string, unknown> | null>(null);
 
-    const login = async (credentials) => {
-        // Logic for login (e.g., API call)
-        // On success, update user state
-        setUser(credentials);
-    };
+  const signUp = async (credentials: Record<string, unknown>) => {
+    setUser(credentials);
+  };
 
-    const logout = () => {
-        // Logic for logout
-        setUser(null);
-    };
+  const login = async (credentials: Record<string, unknown>) => {
+    setUser(credentials);
+  };
 
-    return (
-        <AuthContext.Provider value={{ user, signUp, login, logout }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  const logout = () => {
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, signUp, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-    return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
 };
