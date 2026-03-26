@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getTemplate } from "@/data/templates";
-import { CVContent } from "@/types/cv";
+import { CVContent, CVLayout, CVSpacing } from "@/types/cv";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, us
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import SectionAccordion from "@/components/editor/SectionAccordion";
 import CVPreview from "@/components/editor/CVPreview";
+import ThemeCustomizer from "@/components/editor/ThemeCustomizer";
 import { downloadCVAsPDF } from "@/components/PdfDownload";
 
 const SECTION_CONFIG = [
@@ -25,6 +26,7 @@ const EditorPage = () => {
   const [searchParams] = useSearchParams();
   const templateId = searchParams.get("template") || "executive-pro";
   const template = getTemplate(templateId);
+  const theme = template?.theme || getTemplate("executive-pro")!.theme;
 
   const [content, setContent] = useState<CVContent>(
     template?.defaultContent || getTemplate("executive-pro")!.defaultContent
@@ -35,6 +37,13 @@ const EditorPage = () => {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     header: true, summary: true, experience: true, education: false, skills: false,
   });
+
+  // Theme state
+  const [themeColor, setThemeColor] = useState(theme.primaryColor);
+  const [fontHeading, setFontHeading] = useState(theme.fontHeading);
+  const [fontBody, setFontBody] = useState(theme.fontBody);
+  const [layout, setLayout] = useState<CVLayout>(theme.layout || "single-column");
+  const [spacing, setSpacing] = useState<CVSpacing>(theme.spacing || "comfortable");
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -98,7 +107,6 @@ const EditorPage = () => {
   const handleSave = () => setSaveStatus("saved");
 
   const handleDownloadPDF = () => {
-    const themeColor = template?.theme.primaryColor || "#7c2d36";
     downloadCVAsPDF(content, themeColor, docTitle);
   };
 
@@ -119,7 +127,6 @@ const EditorPage = () => {
     return () => clearTimeout(t);
   }, [saveStatus, content]);
 
-  const themeColor = template?.theme.primaryColor || "#7c2d36";
   const orderedSections = sectionOrder.map((id) => SECTION_CONFIG.find((s) => s.id === id)!);
 
   const renderSectionContent = (sectionId: string) => {
@@ -240,6 +247,18 @@ const EditorPage = () => {
         <div className="flex flex-col lg:flex-row w-full container mx-auto gap-6 p-4 pb-16">
           {/* Left: Edit panel */}
           <div className="lg:w-[420px] shrink-0 space-y-3 overflow-y-auto max-h-[calc(100vh-8rem)]">
+            <ThemeCustomizer
+              color={themeColor}
+              fontHeading={fontHeading}
+              fontBody={fontBody}
+              layout={layout}
+              spacing={spacing}
+              onColorChange={setThemeColor}
+              onFontChange={(h, b) => { setFontHeading(h); setFontBody(b); }}
+              onLayoutChange={setLayout}
+              onSpacingChange={setSpacing}
+            />
+
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
               <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
                 {orderedSections.map((section) => (
@@ -260,7 +279,15 @@ const EditorPage = () => {
           {/* Right: Live preview */}
           <div className="flex-1 flex justify-center">
             <div className="w-full max-w-[600px] bg-background shadow-elevated rounded-lg border p-8 overflow-y-auto max-h-[calc(100vh-8rem)]">
-              <CVPreview content={content} themeColor={themeColor} sectionOrder={sectionOrder} />
+              <CVPreview
+                content={content}
+                themeColor={themeColor}
+                sectionOrder={sectionOrder}
+                layout={layout}
+                spacing={spacing}
+                fontHeading={fontHeading}
+                fontBody={fontBody}
+              />
             </div>
           </div>
         </div>

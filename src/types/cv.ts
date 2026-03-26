@@ -1,3 +1,6 @@
+export type CVLayout = "single-column" | "two-column" | "sidebar";
+export type CVSpacing = "compact" | "comfortable" | "spacious";
+
 export interface CVTemplate {
   id: string;
   name: string;
@@ -48,6 +51,8 @@ export interface CVTheme {
   accentColor: string;
   fontHeading: string;
   fontBody: string;
+  layout?: CVLayout;
+  spacing?: CVSpacing;
 }
 
 export interface CVDocument {
