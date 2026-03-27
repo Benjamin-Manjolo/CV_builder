@@ -43,11 +43,15 @@ interface ThemeCustomizerProps {
   onLayoutChange: (layout: CVLayout) => void;
   onSpacingChange: (spacing: CVSpacing) => void;
   onPageSizeChange: (pageSize: CVPageSize) => void;
+  hideLayout?: boolean;
 }
+
+export type { ThemeCustomizerProps };
 
 const ThemeCustomizer = ({
   color, fontHeading, fontBody, layout, spacing, pageSize,
   onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange,
+  hideLayout = false,
 }: ThemeCustomizerProps) => {
   const activeFontPair = FONT_PAIRS.find(
     (f) => f.heading === fontHeading && f.body === fontBody
@@ -111,7 +115,7 @@ const ThemeCustomizer = ({
       </div>
 
       {/* Layout */}
-      <div className="space-y-2">
+      {!hideLayout && <div className="space-y-2">
         <Label className="text-xs text-muted-foreground">Layout</Label>
         <div className="flex gap-2">
           {LAYOUTS.map((l) => (
@@ -129,7 +133,7 @@ const ThemeCustomizer = ({
             </button>
           ))}
         </div>
-      </div>
+      </div>}
 
       {/* Spacing */}
       <div className="space-y-2">

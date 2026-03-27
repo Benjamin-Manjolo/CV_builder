@@ -8,6 +8,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import Index from "./pages/Index";
 import Templates from "./pages/Templates";
 import EditorPage from "./pages/Editor";
+import Letters from "./pages/Letters";
+import LetterEditorPage from "./pages/LetterEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +27,8 @@ const App = () => {
                 <Route path="/" element={<Index />} />
                 <Route path="/templates" element={<Templates />} />
                 <Route path="/editor/new" element={<EditorPage />} />
+                <Route path="/letters" element={<Letters />} />
+                <Route path="/editor/letter" element={<LetterEditorPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
