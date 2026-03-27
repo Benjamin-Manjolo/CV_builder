@@ -281,7 +281,14 @@ const EditorPage = () => {
 
           {/* Right: Live preview */}
           <div className="flex-1 flex justify-center">
-            <div className="w-full max-w-[600px] bg-background shadow-elevated rounded-lg border p-8 overflow-y-auto max-h-[calc(100vh-8rem)]">
+            <div
+              className="bg-background shadow-elevated rounded-lg border overflow-y-auto max-h-[calc(100vh-8rem)] mx-auto"
+              style={{
+                width: pageSize === "letter" ? "612px" : "595px",
+                minHeight: pageSize === "letter" ? "792px" : "842px",
+                padding: "48px 40px",
+              }}
+            >
               <CVPreview
                 content={content}
                 themeColor={themeColor}
