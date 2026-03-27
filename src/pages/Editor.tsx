@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getTemplate } from "@/data/templates";
-import { CVContent, CVLayout, CVSpacing } from "@/types/cv";
+import { CVContent, CVLayout, CVSpacing, CVPageSize } from "@/types/cv";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,6 +44,7 @@ const EditorPage = () => {
   const [fontBody, setFontBody] = useState(theme.fontBody);
   const [layout, setLayout] = useState<CVLayout>(theme.layout || "single-column");
   const [spacing, setSpacing] = useState<CVSpacing>(theme.spacing || "comfortable");
+  const [pageSize, setPageSize] = useState<CVPageSize>(theme.pageSize || "letter");
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -107,7 +108,7 @@ const EditorPage = () => {
   const handleSave = () => setSaveStatus("saved");
 
   const handleDownloadPDF = () => {
-    downloadCVAsPDF(content, themeColor, docTitle);
+    downloadCVAsPDF(content, themeColor, docTitle, pageSize);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -253,10 +254,12 @@ const EditorPage = () => {
               fontBody={fontBody}
               layout={layout}
               spacing={spacing}
+              pageSize={pageSize}
               onColorChange={setThemeColor}
               onFontChange={(h, b) => { setFontHeading(h); setFontBody(b); }}
               onLayoutChange={setLayout}
               onSpacingChange={setSpacing}
+              onPageSizeChange={setPageSize}
             />
 
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

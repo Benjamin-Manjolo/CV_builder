@@ -1,7 +1,7 @@
-import { CVContent } from "@/types/cv";
+import { CVContent, CVPageSize } from "@/types/cv";
 
-export function downloadCVAsPDF(content: CVContent, themeColor: string, title: string) {
-  const html = buildCVHTML(content, themeColor, title);
+export function downloadCVAsPDF(content: CVContent, themeColor: string, title: string, pageSize: CVPageSize = "letter") {
+  const html = buildCVHTML(content, themeColor, title, pageSize);
 
   // Blob URL approach — reliable cross-browser, not blocked like iframes
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
@@ -33,7 +33,7 @@ export function downloadCVAsPDF(content: CVContent, themeColor: string, title: s
   };
 }
 
-function buildCVHTML(content: CVContent, themeColor: string, title: string): string {
+function buildCVHTML(content: CVContent, themeColor: string, title: string, pageSize: CVPageSize): string {
   const { header, summary, experience, education, skills } = content;
 
   const experienceHTML = experience
@@ -94,7 +94,7 @@ function buildCVHTML(content: CVContent, themeColor: string, title: string): str
       font-size: 13px;
       line-height: 1.55;
     }
-    @page { size: A4; margin: 0; }
+    @page { size: ${pageSize === "letter" ? "8.5in 11in" : "210mm 297mm"}; margin: 0; }
     @media print {
       body { padding: 24px 32px; }
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
