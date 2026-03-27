@@ -44,7 +44,10 @@ const Navbar = ({ onLoginClick }: NavbarProps) => {
           
           <div className="hidden md:flex items-center gap-8">
             <Link to="/templates" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Templates
+              CV Templates
+            </Link>
+            <Link to="/letters" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Cover Letters
             </Link>
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               Features
