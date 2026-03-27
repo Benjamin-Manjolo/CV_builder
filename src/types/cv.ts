@@ -1,5 +1,6 @@
 export type CVLayout = "single-column" | "two-column" | "sidebar";
 export type CVSpacing = "compact" | "comfortable" | "spacious";
+export type CVPageSize = "letter" | "a4";
 
 export interface CVTemplate {
   id: string;
@@ -53,6 +54,7 @@ export interface CVTheme {
   fontBody: string;
   layout?: CVLayout;
   spacing?: CVSpacing;
+  pageSize?: CVPageSize;
 }
 
 export interface CVDocument {
