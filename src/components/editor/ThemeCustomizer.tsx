@@ -1,4 +1,4 @@
-import { CVLayout, CVSpacing } from "@/types/cv";
+import { CVLayout, CVSpacing, CVPageSize } from "@/types/cv";
 import { Label } from "@/components/ui/label";
 import { Columns2, LayoutList, PanelLeft, Minus, AlignJustify, AlignCenter } from "lucide-react";
 
@@ -26,21 +26,32 @@ const SPACINGS: { id: CVSpacing; label: string; icon: React.ReactNode }[] = [
   { id: "spacious", label: "Spacious", icon: <AlignJustify className="h-4 w-4" /> },
 ];
 
+const PAGE_SIZES: { id: CVPageSize; label: string; desc: string }[] = [
+  { id: "letter", label: "US Letter", desc: '8.5 × 11"' },
+  { id: "a4", label: "A4", desc: "210 × 297mm" },
+];
+
 interface ThemeCustomizerProps {
   color: string;
   fontHeading: string;
   fontBody: string;
   layout: CVLayout;
   spacing: CVSpacing;
+  pageSize: CVPageSize;
   onColorChange: (color: string) => void;
+  onFontChange: (heading: string, body: string) => void;
+  onLayoutChange: (layout: CVLayout) => void;
+  onSpacingChange: (spacing: CVSpacing) => void;
+  onPageSizeChange: (pageSize: CVPageSize) => void;
+}
   onFontChange: (heading: string, body: string) => void;
   onLayoutChange: (layout: CVLayout) => void;
   onSpacingChange: (spacing: CVSpacing) => void;
 }
 
 const ThemeCustomizer = ({
-  color, fontHeading, fontBody, layout, spacing,
-  onColorChange, onFontChange, onLayoutChange, onSpacingChange,
+  color, fontHeading, fontBody, layout, spacing, pageSize,
+  onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange,
 }: ThemeCustomizerProps) => {
   const activeFontPair = FONT_PAIRS.find(
     (f) => f.heading === fontHeading && f.body === fontBody
@@ -140,6 +151,27 @@ const ThemeCustomizer = ({
             >
               {s.icon}
               {s.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Page Size */}
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Page Size</Label>
+        <div className="flex gap-2">
+          {PAGE_SIZES.map((ps) => (
+            <button
+              key={ps.id}
+              onClick={() => onPageSizeChange(ps.id)}
+              className={`flex-1 flex flex-col items-center gap-0.5 p-2 rounded-md border text-xs transition-colors ${
+                pageSize === ps.id
+                  ? "border-primary bg-primary/5 text-foreground"
+                  : "border-border text-muted-foreground hover:border-muted-foreground/40"
+              }`}
+            >
+              <span className="font-medium">{ps.label}</span>
+              <span className="text-[10px] text-muted-foreground">{ps.desc}</span>
             </button>
           ))}
         </div>
