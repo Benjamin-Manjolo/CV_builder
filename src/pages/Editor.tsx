@@ -107,8 +107,8 @@ const EditorPage = () => {
 
   const handleSave = () => setSaveStatus("saved");
 
-  const handleDownloadPDF = () => {
-    downloadCVAsPDF(content, themeColor, docTitle, pageSize);
+  const handleDownloadPDF = async () => {
+    await downloadCVAsPDF("cv-preview", docTitle, pageSize);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
