@@ -44,10 +44,6 @@ interface ThemeCustomizerProps {
   onSpacingChange: (spacing: CVSpacing) => void;
   onPageSizeChange: (pageSize: CVPageSize) => void;
 }
-  onFontChange: (heading: string, body: string) => void;
-  onLayoutChange: (layout: CVLayout) => void;
-  onSpacingChange: (spacing: CVSpacing) => void;
-}
 
 const ThemeCustomizer = ({
   color, fontHeading, fontBody, layout, spacing, pageSize,
