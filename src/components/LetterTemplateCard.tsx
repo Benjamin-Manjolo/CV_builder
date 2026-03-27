@@ -101,7 +101,7 @@ const LetterTemplateCard = ({ template }: LetterTemplateCardProps) => {
             <p className="text-sm font-semibold text-primary mt-2">${template.price.toFixed(2)} one-time</p>
           )}
           {template.isPremium && canAccess && (
-            <p className="text-sm font-medium text-green-600 mt-2">✓ Included in your plan</p>
+            <p className="text-sm font-medium text-primary mt-2">✓ Included in your plan</p>
           )}
         </div>
       </div>
