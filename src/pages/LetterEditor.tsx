@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Save, Download } from "lucide-react";
 import LetterPreview from "@/components/editor/LetterPreview";
 import ThemeCustomizer from "@/components/editor/ThemeCustomizer";
-import { downloadCVAsPDF } from "@/components/PdfDownload";
+import { downloadPdfBlob } from "@/lib/pdfExport";
+import LetterPdfDocument from "@/components/pdf/LetterPdfDocument";
 
 const LetterEditorPage = () => {
   const [searchParams] = useSearchParams();
@@ -45,7 +46,15 @@ const LetterEditorPage = () => {
   const handleSave = () => setSaveStatus("saved");
 
   const handleDownloadPDF = async () => {
-    await downloadCVAsPDF("letter-preview", docTitle, pageSize);
+    const pdfDoc = (
+      <LetterPdfDocument
+        content={content}
+        themeColor={themeColor}
+        spacing={spacing}
+        pageSize={pageSize}
+      />
+    );
+    await downloadPdfBlob(pdfDoc, docTitle);
   };
 
   return (

@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Save, Download, Plus, Trash2, ChevronDown, ChevronRight, Loader2 } from "lucide-react";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useDocuments } from "@/hooks/useDocuments";
-import { exportToPDF } from "@/lib/pdfExport";
+import { downloadPdfBlob } from "@/lib/pdfExport";
+import CVPdfDocument from "@/components/pdf/CVPdfDocument";
 import { useAuth } from "@/components/Auth/AuthContext";
 import { AuthModal } from "@/components/Auth/AuthModal";
 import { toast } from "sonner";
@@ -68,11 +69,10 @@ const EditorPage = () => {
   }, [saveStatus, content, handleSave]);
   
  const handleDownloadPDF = async () => {
-  console.log('📥 Download started'); // optional debug
   setDownloadingPDF(true);
   try {
-    // Fixed: correct element ID and filename template literal
-    await exportToPDF("cv-preview", `${docTitle}.pdf`);
+    const pdfDoc = <CVPdfDocument content={content} themeColor={themeColor} sectionOrder={["header", "summary", "experience", "education", "skills"]} />;
+    await downloadPdfBlob(pdfDoc, docTitle);
     toast.success("PDF ready", {
       description: "Downloaded successfully",
     });
