@@ -12,7 +12,8 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import SectionAccordion from "@/components/editor/SectionAccordion";
 import CVPreview from "@/components/editor/CVPreview";
 import ThemeCustomizer from "@/components/editor/ThemeCustomizer";
-import { downloadCVAsPDF } from "@/components/PdfDownload";
+import { downloadPdfBlob } from "@/lib/pdfExport";
+import CVPdfDocument from "@/components/pdf/CVPdfDocument";
 
 const SECTION_CONFIG = [
   { id: "header", title: "Personal Info" },
@@ -108,7 +109,19 @@ const EditorPage = () => {
   const handleSave = () => setSaveStatus("saved");
 
   const handleDownloadPDF = async () => {
-    await downloadCVAsPDF("cv-preview", docTitle, pageSize);
+    const pdfDoc = (
+      <CVPdfDocument
+        content={content}
+        themeColor={themeColor}
+        sectionOrder={sectionOrder}
+        layout={layout}
+        spacing={spacing}
+        pageSize={pageSize}
+        fontHeading={fontHeading}
+        fontBody={fontBody}
+      />
+    );
+    await downloadPdfBlob(pdfDoc, docTitle);
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
