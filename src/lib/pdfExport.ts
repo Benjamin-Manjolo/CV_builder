@@ -1,22 +1,17 @@
 import { pdf } from "@react-pdf/renderer";
+import { ReactElement } from "react";
 
 export const downloadPdfBlob = async (
-  document: React.ReactElement,
+  pdfDocument: ReactElement,
   filename: string
 ) => {
-  const blob = await pdf(document).toBlob();
+  const blob = await pdf(pdfDocument).toBlob();
   const url = URL.createObjectURL(blob);
-  const link = document.createElement
-    ? Object.assign(globalThis.document.createElement("a"), {
-        href: url,
-        download: filename.replace(/\s+/g, "_") + ".pdf",
-      })
-    : null;
-
-  if (link) {
-    globalThis.document.body.appendChild(link);
-    link.click();
-    globalThis.document.body.removeChild(link);
-  }
+  const link = globalThis.document.createElement("a");
+  link.href = url;
+  link.download = filename.replace(/\s+/g, "_") + ".pdf";
+  globalThis.document.body.appendChild(link);
+  link.click();
+  globalThis.document.body.removeChild(link);
   URL.revokeObjectURL(url);
 };
