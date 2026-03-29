@@ -25,7 +25,7 @@ const LetterPdfDocument = ({
   const format = pageSize === "letter" ? "LETTER" : "A4";
 
   const styles = StyleSheet.create({
-    page: { padding: 48, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.6 },
+    page: { paddingTop: 28.91, paddingBottom: 43.09, paddingLeft: 43.09, paddingRight: 43.09, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.6 },
     senderName: { fontSize: 20, fontWeight: "bold", color: themeColor, marginBottom: 2 },
     senderTitle: { fontSize: 9, color: "#666666", marginBottom: 4 },
     senderContact: { flexDirection: "row", gap: 12, marginBottom: 10 },
