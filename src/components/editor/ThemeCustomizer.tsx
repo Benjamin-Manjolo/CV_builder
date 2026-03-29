@@ -179,6 +179,26 @@ const ThemeCustomizer = ({
           ))}
         </div>
       </div>
+      {/* Margins */}
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Page Margins (cm)</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {(["top", "bottom", "left", "right"] as const).map((side) => (
+            <div key={side} className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground capitalize w-10">{side}</span>
+              <Input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                value={margins[side]}
+                onChange={(e) => onMarginsChange({ ...margins, [side]: parseFloat(e.target.value) || 0 })}
+                className="h-7 text-xs"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
