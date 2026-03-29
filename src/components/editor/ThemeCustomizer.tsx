@@ -52,8 +52,8 @@ interface ThemeCustomizerProps {
 export type { ThemeCustomizerProps };
 
 const ThemeCustomizer = ({
-  color, fontHeading, fontBody, layout, spacing, pageSize,
-  onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange,
+  color, fontHeading, fontBody, layout, spacing, pageSize, margins,
+  onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange, onMarginsChange,
   hideLayout = false,
 }: ThemeCustomizerProps) => {
   const activeFontPair = FONT_PAIRS.find(
