@@ -53,6 +53,7 @@ const LetterEditorPage = () => {
         themeColor={themeColor}
         spacing={spacing}
         pageSize={pageSize}
+        margins={margins}
       />
     );
     await downloadPdfBlob(pdfDoc, docTitle);

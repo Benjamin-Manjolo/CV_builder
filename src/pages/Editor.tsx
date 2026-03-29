@@ -118,6 +118,7 @@ const EditorPage = () => {
         layout={layout}
         spacing={spacing}
         pageSize={pageSize}
+        margins={margins}
         fontHeading={fontHeading}
         fontBody={fontBody}
       />
