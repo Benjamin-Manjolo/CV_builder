@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getTemplate } from "@/data/templates";
-import { CVContent, CVLayout, CVSpacing, CVPageSize } from "@/types/cv";
+import { CVContent, CVLayout, CVSpacing, CVPageSize, CVMargins } from "@/types/cv";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +46,7 @@ const EditorPage = () => {
   const [layout, setLayout] = useState<CVLayout>(theme.layout || "single-column");
   const [spacing, setSpacing] = useState<CVSpacing>(theme.spacing || "comfortable");
   const [pageSize, setPageSize] = useState<CVPageSize>(theme.pageSize || "letter");
+  const [margins, setMargins] = useState<CVMargins>({ top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 });
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -117,6 +118,7 @@ const EditorPage = () => {
         layout={layout}
         spacing={spacing}
         pageSize={pageSize}
+        margins={margins}
         fontHeading={fontHeading}
         fontBody={fontBody}
       />
@@ -268,11 +270,13 @@ const EditorPage = () => {
               layout={layout}
               spacing={spacing}
               pageSize={pageSize}
+              margins={margins}
               onColorChange={setThemeColor}
               onFontChange={(h, b) => { setFontHeading(h); setFontBody(b); }}
               onLayoutChange={setLayout}
               onSpacingChange={setSpacing}
               onPageSizeChange={setPageSize}
+              onMarginsChange={setMargins}
             />
 
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -299,7 +303,7 @@ const EditorPage = () => {
               style={{
                 width: pageSize === "letter" ? "612px" : "595px",
                 minHeight: pageSize === "letter" ? "792px" : "842px",
-                padding: "48px 40px",
+                padding: `${margins.top}cm ${margins.right}cm ${margins.bottom}cm ${margins.left}cm`,
               }}
             >
               <CVPreview

@@ -2,6 +2,13 @@ export type CVLayout = "single-column" | "two-column" | "sidebar";
 export type CVSpacing = "compact" | "comfortable" | "spacious";
 export type CVPageSize = "letter" | "a4";
 
+export interface CVMargins {
+  top: number;    // in cm
+  bottom: number; // in cm
+  left: number;   // in cm
+  right: number;  // in cm
+}
+
 export interface CVTemplate {
   id: string;
   name: string;

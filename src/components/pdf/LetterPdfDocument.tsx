@@ -1,12 +1,13 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { LetterContent } from "@/types/letter";
-import { CVPageSize } from "@/types/cv";
+import { CVPageSize, CVMargins } from "@/types/cv";
 
 interface LetterPdfDocumentProps {
   content: LetterContent;
   themeColor: string;
   spacing?: "compact" | "comfortable" | "spacious";
   pageSize?: CVPageSize;
+  margins?: CVMargins;
 }
 
 const SPACING_MAP = {
@@ -20,12 +21,13 @@ const LetterPdfDocument = ({
   themeColor,
   spacing = "comfortable",
   pageSize = "letter",
+  margins = { top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 },
 }: LetterPdfDocumentProps) => {
   const sp = SPACING_MAP[spacing];
   const format = pageSize === "letter" ? "LETTER" : "A4";
 
   const styles = StyleSheet.create({
-    page: { paddingTop: 28.91, paddingBottom: 43.09, paddingLeft: 43.09, paddingRight: 43.09, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.6 },
+    page: { paddingTop: margins.top * 28.3465, paddingBottom: margins.bottom * 28.3465, paddingLeft: margins.left * 28.3465, paddingRight: margins.right * 28.3465, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.6 },
     senderName: { fontSize: 20, fontWeight: "bold", color: themeColor, marginBottom: 2 },
     senderTitle: { fontSize: 9, color: "#666666", marginBottom: 4 },
     senderContact: { flexDirection: "row", gap: 12, marginBottom: 10 },

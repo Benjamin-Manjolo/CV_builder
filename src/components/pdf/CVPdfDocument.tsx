@@ -1,6 +1,6 @@
 import { Document, Page, View, Text, StyleSheet } from "@react-pdf/renderer";
 import { createTw } from "react-pdf-tailwind";
-import { CVContent, CVLayout, CVSpacing, CVPageSize } from "@/types/cv";
+import { CVContent, CVLayout, CVSpacing, CVPageSize, CVMargins } from "@/types/cv";
 
 const tw = createTw({});
 
@@ -17,6 +17,7 @@ interface CVPdfDocumentProps {
   layout?: CVLayout;
   spacing?: CVSpacing;
   pageSize?: CVPageSize;
+  margins?: CVMargins;
   fontHeading?: string;
   fontBody?: string;
 }
@@ -28,12 +29,13 @@ const CVPdfDocument = ({
   layout = "single-column",
   spacing = "comfortable",
   pageSize = "letter",
+  margins = { top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 },
 }: CVPdfDocumentProps) => {
   const sp = SPACING[spacing];
   const format = pageSize === "letter" ? "LETTER" : "A4";
 
   const styles = StyleSheet.create({
-    page: { paddingTop: 28.91, paddingBottom: 43.09, paddingLeft: 43.09, paddingRight: 43.09, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.5 },
+    page: { paddingTop: margins.top * 28.3465, paddingBottom: margins.bottom * 28.3465, paddingLeft: margins.left * 28.3465, paddingRight: margins.right * 28.3465, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.5 },
     sectionHeading: {
       fontSize: 8,
       fontWeight: "bold",

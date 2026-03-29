@@ -1,5 +1,6 @@
-import { CVLayout, CVSpacing, CVPageSize } from "@/types/cv";
+import { CVLayout, CVSpacing, CVPageSize, CVMargins } from "@/types/cv";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Columns2, LayoutList, PanelLeft, Minus, AlignJustify, AlignCenter } from "lucide-react";
 
 const FONT_PAIRS = [
@@ -38,19 +39,21 @@ interface ThemeCustomizerProps {
   layout: CVLayout;
   spacing: CVSpacing;
   pageSize: CVPageSize;
+  margins: CVMargins;
   onColorChange: (color: string) => void;
   onFontChange: (heading: string, body: string) => void;
   onLayoutChange: (layout: CVLayout) => void;
   onSpacingChange: (spacing: CVSpacing) => void;
   onPageSizeChange: (pageSize: CVPageSize) => void;
+  onMarginsChange: (margins: CVMargins) => void;
   hideLayout?: boolean;
 }
 
 export type { ThemeCustomizerProps };
 
 const ThemeCustomizer = ({
-  color, fontHeading, fontBody, layout, spacing, pageSize,
-  onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange,
+  color, fontHeading, fontBody, layout, spacing, pageSize, margins,
+  onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange, onMarginsChange,
   hideLayout = false,
 }: ThemeCustomizerProps) => {
   const activeFontPair = FONT_PAIRS.find(
@@ -173,6 +176,26 @@ const ThemeCustomizer = ({
               <span className="font-medium">{ps.label}</span>
               <span className="text-[10px] text-muted-foreground">{ps.desc}</span>
             </button>
+          ))}
+        </div>
+      </div>
+      {/* Margins */}
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Page Margins (cm)</Label>
+        <div className="grid grid-cols-2 gap-2">
+          {(["top", "bottom", "left", "right"] as const).map((side) => (
+            <div key={side} className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground capitalize w-10">{side}</span>
+              <Input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                value={margins[side]}
+                onChange={(e) => onMarginsChange({ ...margins, [side]: parseFloat(e.target.value) || 0 })}
+                className="h-7 text-xs"
+              />
+            </div>
           ))}
         </div>
       </div>
