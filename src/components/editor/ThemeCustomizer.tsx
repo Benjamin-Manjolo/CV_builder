@@ -1,5 +1,6 @@
-import { CVLayout, CVSpacing, CVPageSize } from "@/types/cv";
+import { CVLayout, CVSpacing, CVPageSize, CVMargins } from "@/types/cv";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Columns2, LayoutList, PanelLeft, Minus, AlignJustify, AlignCenter } from "lucide-react";
 
 const FONT_PAIRS = [
@@ -38,11 +39,13 @@ interface ThemeCustomizerProps {
   layout: CVLayout;
   spacing: CVSpacing;
   pageSize: CVPageSize;
+  margins: CVMargins;
   onColorChange: (color: string) => void;
   onFontChange: (heading: string, body: string) => void;
   onLayoutChange: (layout: CVLayout) => void;
   onSpacingChange: (spacing: CVSpacing) => void;
   onPageSizeChange: (pageSize: CVPageSize) => void;
+  onMarginsChange: (margins: CVMargins) => void;
   hideLayout?: boolean;
 }
 
