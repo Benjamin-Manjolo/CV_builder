@@ -33,7 +33,7 @@ const CVPdfDocument = ({
   const format = pageSize === "letter" ? "LETTER" : "A4";
 
   const styles = StyleSheet.create({
-    page: { padding: 40, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.5 },
+    page: { paddingTop: 28.91, paddingBottom: 43.09, paddingLeft: 43.09, paddingRight: 43.09, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.5 },
     sectionHeading: {
       fontSize: 8,
       fontWeight: "bold",
