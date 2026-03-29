@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getLetterTemplate } from "@/data/letterTemplates";
 import { LetterContent } from "@/types/letter";
-import { CVPageSize } from "@/types/cv";
+import { CVPageSize, CVMargins } from "@/types/cv";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,7 @@ const LetterEditorPage = () => {
   const [fontBody, setFontBody] = useState(theme.fontBody);
   const [spacing, setSpacing] = useState(theme.spacing || "comfortable");
   const [pageSize, setPageSize] = useState<CVPageSize>("letter");
+  const [margins, setMargins] = useState<CVMargins>({ top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 });
 
   const markUnsaved = useCallback(() => setSaveStatus("unsaved"), []);
 
@@ -94,11 +95,13 @@ const LetterEditorPage = () => {
               layout="single-column"
               spacing={spacing}
               pageSize={pageSize}
+              margins={margins}
               onColorChange={setThemeColor}
               onFontChange={(h, b) => { setFontHeading(h); setFontBody(b); }}
               onLayoutChange={() => {}}
               onSpacingChange={setSpacing}
               onPageSizeChange={setPageSize}
+              onMarginsChange={setMargins}
               hideLayout
             />
 
@@ -147,7 +150,7 @@ const LetterEditorPage = () => {
               style={{
                 width: pageSize === "letter" ? "612px" : "595px",
                 minHeight: pageSize === "letter" ? "792px" : "842px",
-                padding: "28.91px 43.09px 43.09px 43.09px",
+                padding: `${margins.top}cm ${margins.right}cm ${margins.bottom}cm ${margins.left}cm`,
               }}
             >
               <LetterPreview
