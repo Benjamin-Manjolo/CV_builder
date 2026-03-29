@@ -147,7 +147,7 @@ const LetterEditorPage = () => {
               style={{
                 width: pageSize === "letter" ? "612px" : "595px",
                 minHeight: pageSize === "letter" ? "792px" : "842px",
-                padding: "48px 40px",
+                padding: "28.91px 43.09px 43.09px 43.09px",
               }}
             >
               <LetterPreview
