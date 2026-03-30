@@ -31,6 +31,7 @@ const LetterEditorPage = () => {
   const [spacing, setSpacing] = useState(theme.spacing || "comfortable");
   const [pageSize, setPageSize] = useState<CVPageSize>("letter");
   const [margins, setMargins] = useState<CVMargins>({ top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 });
+  const [fontSize, setFontSize] = useState(10);
 
   const markUnsaved = useCallback(() => setSaveStatus("unsaved"), []);
 
@@ -54,6 +55,7 @@ const LetterEditorPage = () => {
         spacing={spacing}
         pageSize={pageSize}
         margins={margins}
+        fontSize={fontSize}
       />
     );
     await downloadPdfBlob(pdfDoc, docTitle);
@@ -97,12 +99,14 @@ const LetterEditorPage = () => {
               spacing={spacing}
               pageSize={pageSize}
               margins={margins}
+              fontSize={fontSize}
               onColorChange={setThemeColor}
               onFontChange={(h, b) => { setFontHeading(h); setFontBody(b); }}
               onLayoutChange={() => {}}
               onSpacingChange={setSpacing}
               onPageSizeChange={setPageSize}
               onMarginsChange={setMargins}
+              onFontSizeChange={setFontSize}
               hideLayout
             />
 
@@ -160,6 +164,7 @@ const LetterEditorPage = () => {
                 spacing={spacing}
                 fontHeading={fontHeading}
                 fontBody={fontBody}
+                fontSize={fontSize}
               />
             </div>
           </div>
