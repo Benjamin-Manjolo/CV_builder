@@ -20,6 +20,7 @@ interface CVPdfDocumentProps {
   margins?: CVMargins;
   fontHeading?: string;
   fontBody?: string;
+  fontSize?: number;
 }
 
 const CVPdfDocument = ({
@@ -30,12 +31,15 @@ const CVPdfDocument = ({
   spacing = "comfortable",
   pageSize = "letter",
   margins = { top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 },
+  fontSize: fontSizeProp,
 }: CVPdfDocumentProps) => {
+  const sp = SPACING[spacing];
+  const baseFontSize = fontSizeProp ?? sp.fontSize;
   const sp = SPACING[spacing];
   const format = pageSize === "letter" ? "LETTER" : "A4";
 
   const styles = StyleSheet.create({
-    page: { paddingTop: margins.top * 28.3465, paddingBottom: margins.bottom * 28.3465, paddingLeft: margins.left * 28.3465, paddingRight: margins.right * 28.3465, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.5 },
+    page: { paddingTop: margins.top * 28.3465, paddingBottom: margins.bottom * 28.3465, paddingLeft: margins.left * 28.3465, paddingRight: margins.right * 28.3465, fontSize: baseFontSize, color: "#333333", lineHeight: 1.5 },
     sectionHeading: {
       fontSize: 8,
       fontWeight: "bold",
@@ -44,21 +48,21 @@ const CVPdfDocument = ({
       color: themeColor,
       marginBottom: 6,
     },
-    name: { fontSize: 22, fontWeight: "bold", color: themeColor, marginBottom: 2, textAlign: "center" },
-    title: { fontSize: sp.fontSize, color: "#666666", marginBottom: 6, textAlign: "center" },
+    name: { fontSize: baseFontSize + 12, fontWeight: "bold", color: themeColor, marginBottom: 2, textAlign: "center" },
+    title: { fontSize: baseFontSize, color: "#666666", marginBottom: 6, textAlign: "center" },
     contactRow: { flexDirection: "row", justifyContent: "center", gap: 12, marginBottom: 4 },
     contactText: { fontSize: 8, color: "#666666" },
     headerBorder: { borderBottomWidth: 2, borderBottomColor: themeColor, paddingBottom: 10, marginBottom: sp.sectionMb },
     section: { marginBottom: sp.sectionMb },
     expHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
-    expRole: { fontSize: sp.fontSize + 1, fontWeight: "bold", color: "#111111" },
+    expRole: { fontSize: baseFontSize + 1, fontWeight: "bold", color: "#111111" },
     expCompany: { fontSize: 8, color: "#666666", marginBottom: 3 },
     expDate: { fontSize: 8, color: "#666666" },
     bullet: { flexDirection: "row", marginBottom: 2 },
-    bulletDot: { width: 8, fontSize: sp.fontSize, color: "#666666" },
-    bulletText: { flex: 1, fontSize: sp.fontSize, color: "#666666" },
+    bulletDot: { width: 8, fontSize: baseFontSize, color: "#666666" },
+    bulletText: { flex: 1, fontSize: baseFontSize, color: "#666666" },
     eduRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 4 },
-    eduDegree: { fontSize: sp.fontSize + 1, fontWeight: "bold", color: "#111111" },
+    eduDegree: { fontSize: baseFontSize + 1, fontWeight: "bold", color: "#111111" },
     eduInstitution: { fontSize: 8, color: "#666666" },
     skillBadge: {
       fontSize: 8,
@@ -69,14 +73,14 @@ const CVPdfDocument = ({
       color: themeColor,
     },
     skillsRow: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
-    summaryText: { fontSize: sp.fontSize, color: "#666666" },
+    summaryText: { fontSize: baseFontSize, color: "#666666" },
     twoColContainer: { flexDirection: "row", gap: 20, marginTop: 10 },
     twoColHalf: { flex: 1 },
     sidebarContainer: { flexDirection: "row", gap: 16 },
     sidebarLeft: { width: "32%", borderRightWidth: 2, borderRightColor: themeColor + "30", paddingRight: 12 },
     sidebarRight: { flex: 1 },
-    sidebarName: { fontSize: 16, fontWeight: "bold", color: themeColor, marginBottom: 2 },
-    sidebarTitle: { fontSize: sp.fontSize, color: "#666666", marginBottom: sp.sectionMb },
+    sidebarName: { fontSize: baseFontSize + 6, fontWeight: "bold", color: themeColor, marginBottom: 2 },
+    sidebarTitle: { fontSize: baseFontSize, color: "#666666", marginBottom: sp.sectionMb },
   });
 
   const SectionHeading = ({ label }: { label: string }) => (
