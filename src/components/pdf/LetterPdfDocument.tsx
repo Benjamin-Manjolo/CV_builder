@@ -8,6 +8,7 @@ interface LetterPdfDocumentProps {
   spacing?: "compact" | "comfortable" | "spacious";
   pageSize?: CVPageSize;
   margins?: CVMargins;
+  fontSize?: number;
 }
 
 const SPACING_MAP = {
@@ -22,27 +23,29 @@ const LetterPdfDocument = ({
   spacing = "comfortable",
   pageSize = "letter",
   margins = { top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 },
+  fontSize: fontSizeProp,
 }: LetterPdfDocumentProps) => {
   const sp = SPACING_MAP[spacing];
+  const baseFontSize = fontSizeProp ?? sp.fontSize;
   const format = pageSize === "letter" ? "LETTER" : "A4";
 
   const styles = StyleSheet.create({
-    page: { paddingTop: margins.top * 28.3465, paddingBottom: margins.bottom * 28.3465, paddingLeft: margins.left * 28.3465, paddingRight: margins.right * 28.3465, fontSize: sp.fontSize, color: "#333333", lineHeight: 1.6 },
+    page: { paddingTop: margins.top * 28.3465, paddingBottom: margins.bottom * 28.3465, paddingLeft: margins.left * 28.3465, paddingRight: margins.right * 28.3465, fontSize: baseFontSize, color: "#333333", lineHeight: 1.6 },
     senderName: { fontSize: 20, fontWeight: "bold", color: themeColor, marginBottom: 2 },
     senderTitle: { fontSize: 9, color: "#666666", marginBottom: 4 },
     senderContact: { flexDirection: "row", gap: 12, marginBottom: 10 },
     senderContactText: { fontSize: 8, color: "#666666" },
     headerBorder: { borderBottomWidth: 2, borderBottomColor: themeColor, paddingBottom: 10, marginBottom: sp.sectionMb },
-    date: { fontSize: sp.fontSize, color: "#666666", marginBottom: sp.sectionMb },
-    recipientName: { fontSize: sp.fontSize, fontWeight: "bold", color: "#111111" },
-    recipientText: { fontSize: sp.fontSize, color: "#666666" },
+    date: { fontSize: baseFontSize, color: "#666666", marginBottom: sp.sectionMb },
+    recipientName: { fontSize: baseFontSize, fontWeight: "bold", color: "#111111" },
+    recipientText: { fontSize: baseFontSize, color: "#666666" },
     section: { marginBottom: sp.sectionMb },
-    subject: { fontSize: sp.fontSize + 1, fontWeight: "bold", color: "#111111", marginBottom: sp.sectionMb },
-    greeting: { fontSize: sp.fontSize, color: "#111111", marginBottom: sp.sectionMb },
-    bodyParagraph: { fontSize: sp.fontSize, color: "#666666", marginBottom: 8 },
+    subject: { fontSize: baseFontSize + 1, fontWeight: "bold", color: "#111111", marginBottom: sp.sectionMb },
+    greeting: { fontSize: baseFontSize, color: "#111111", marginBottom: sp.sectionMb },
+    bodyParagraph: { fontSize: baseFontSize, color: "#666666", marginBottom: 8 },
     closingSection: { marginTop: 24 },
-    closing: { fontSize: sp.fontSize, color: "#111111", marginBottom: 18 },
-    signature: { fontSize: sp.fontSize + 1, fontWeight: "bold", color: themeColor },
+    closing: { fontSize: baseFontSize, color: "#111111", marginBottom: 18 },
+    signature: { fontSize: baseFontSize + 1, fontWeight: "bold", color: themeColor },
   });
 
   return (

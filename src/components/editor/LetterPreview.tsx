@@ -6,6 +6,7 @@ interface LetterPreviewProps {
   spacing?: "compact" | "comfortable" | "spacious";
   fontHeading?: string;
   fontBody?: string;
+  fontSize?: number;
 }
 
 const SPACING_MAP = {
@@ -20,13 +21,14 @@ const LetterPreview = ({
   spacing = "comfortable",
   fontHeading = "Playfair Display",
   fontBody = "DM Sans",
+  fontSize = 10,
 }: LetterPreviewProps) => {
   const sp = SPACING_MAP[spacing];
   const headingFont = `${fontHeading}, serif`;
   const bodyFont = `${fontBody}, sans-serif`;
 
   return (
-    <div id="letter-preview" style={{ fontFamily: bodyFont }}>
+    <div id="letter-preview" style={{ fontFamily: bodyFont, fontSize: `${fontSize}px` }}>
       {/* Sender info */}
       <div className={sp.section} style={{ borderBottom: `2px solid ${themeColor}` }}>
         <h1 className="text-2xl font-bold mb-1" style={{ fontFamily: headingFont, color: themeColor }}>

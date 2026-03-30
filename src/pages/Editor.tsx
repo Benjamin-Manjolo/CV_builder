@@ -47,6 +47,7 @@ const EditorPage = () => {
   const [spacing, setSpacing] = useState<CVSpacing>(theme.spacing || "comfortable");
   const [pageSize, setPageSize] = useState<CVPageSize>(theme.pageSize || "letter");
   const [margins, setMargins] = useState<CVMargins>({ top: 1.02, bottom: 1.52, left: 1.52, right: 1.52 });
+  const [fontSize, setFontSize] = useState(10);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -121,6 +122,7 @@ const EditorPage = () => {
         margins={margins}
         fontHeading={fontHeading}
         fontBody={fontBody}
+        fontSize={fontSize}
       />
     );
     await downloadPdfBlob(pdfDoc, docTitle);
@@ -271,12 +273,14 @@ const EditorPage = () => {
               spacing={spacing}
               pageSize={pageSize}
               margins={margins}
+              fontSize={fontSize}
               onColorChange={setThemeColor}
               onFontChange={(h, b) => { setFontHeading(h); setFontBody(b); }}
               onLayoutChange={setLayout}
               onSpacingChange={setSpacing}
               onPageSizeChange={setPageSize}
               onMarginsChange={setMargins}
+              onFontSizeChange={setFontSize}
             />
 
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -314,6 +318,7 @@ const EditorPage = () => {
                 spacing={spacing}
                 fontHeading={fontHeading}
                 fontBody={fontBody}
+                fontSize={fontSize}
               />
             </div>
           </div>

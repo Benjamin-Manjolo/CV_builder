@@ -8,6 +8,7 @@ interface CVPreviewProps {
   spacing?: CVSpacing;
   fontHeading?: string;
   fontBody?: string;
+  fontSize?: number;
 }
 
 const SPACING_MAP: Record<CVSpacing, { section: string; inner: string; text: string }> = {
@@ -20,6 +21,7 @@ const CVPreview = ({
   content, themeColor, sectionOrder,
   layout = "single-column", spacing = "comfortable",
   fontHeading = "Playfair Display", fontBody = "DM Sans",
+  fontSize = 10,
 }: CVPreviewProps) => {
   const sp = SPACING_MAP[spacing];
   const headingFont = `${fontHeading}, serif`;
@@ -156,7 +158,7 @@ const CVPreview = ({
   if (layout === "sidebar") {
     const mainSections = sectionOrder.filter((s) => s !== "header" && s !== "skills");
     return (
-      <div id="cv-preview" className="flex gap-6" style={{ fontFamily: bodyFont }}>
+      <div id="cv-preview" className="flex gap-6" style={{ fontFamily: bodyFont, fontSize: `${fontSize}px` }}>
         {/* Sidebar */}
         <div className="w-[35%] shrink-0 pr-4" style={{ borderRight: `2px solid ${themeColor}20` }}>
           {renderSidebarHeader()}
@@ -179,7 +181,7 @@ const CVPreview = ({
     const rightSections = withoutHeader.slice(midpoint);
 
     return (
-      <div id="cv-preview" style={{ fontFamily: bodyFont }}>
+      <div id="cv-preview" style={{ fontFamily: bodyFont, fontSize: `${fontSize}px` }}>
         {renderHeader()}
         <div className="flex gap-6 mt-4">
           <div className="flex-1">{leftSections.map(renderSection)}</div>
@@ -191,7 +193,7 @@ const CVPreview = ({
 
   // Single-column (default)
   return (
-    <div id="cv-preview" className={`${sp.text} leading-relaxed`} style={{ fontFamily: bodyFont }}>
+    <div id="cv-preview" className="leading-relaxed" style={{ fontFamily: bodyFont, fontSize: `${fontSize}px` }}>
       {sectionOrder.map(renderSection)}
     </div>
   );
