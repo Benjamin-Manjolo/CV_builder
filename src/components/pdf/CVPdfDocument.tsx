@@ -35,7 +35,6 @@ const CVPdfDocument = ({
 }: CVPdfDocumentProps) => {
   const sp = SPACING[spacing];
   const baseFontSize = fontSizeProp ?? sp.fontSize;
-  const sp = SPACING[spacing];
   const format = pageSize === "letter" ? "LETTER" : "A4";
 
   const styles = StyleSheet.create({
