@@ -1,6 +1,7 @@
 import { CVLayout, CVSpacing, CVPageSize, CVMargins } from "@/types/cv";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import { Columns2, LayoutList, PanelLeft, Minus, AlignJustify, AlignCenter } from "lucide-react";
 
 const FONT_PAIRS = [
@@ -40,20 +41,22 @@ interface ThemeCustomizerProps {
   spacing: CVSpacing;
   pageSize: CVPageSize;
   margins: CVMargins;
+  fontSize: number;
   onColorChange: (color: string) => void;
   onFontChange: (heading: string, body: string) => void;
   onLayoutChange: (layout: CVLayout) => void;
   onSpacingChange: (spacing: CVSpacing) => void;
   onPageSizeChange: (pageSize: CVPageSize) => void;
   onMarginsChange: (margins: CVMargins) => void;
+  onFontSizeChange: (size: number) => void;
   hideLayout?: boolean;
 }
 
 export type { ThemeCustomizerProps };
 
 const ThemeCustomizer = ({
-  color, fontHeading, fontBody, layout, spacing, pageSize, margins,
-  onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange, onMarginsChange,
+  color, fontHeading, fontBody, layout, spacing, pageSize, margins, fontSize,
+  onColorChange, onFontChange, onLayoutChange, onSpacingChange, onPageSizeChange, onMarginsChange, onFontSizeChange,
   hideLayout = false,
 }: ThemeCustomizerProps) => {
   const activeFontPair = FONT_PAIRS.find(
@@ -90,6 +93,21 @@ const ThemeCustomizer = ({
             <span className="absolute inset-0 flex items-center justify-center text-[10px] text-muted-foreground">+</span>
           </label>
         </div>
+      </div>
+
+      {/* Font Size */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <Label className="text-xs text-muted-foreground">Font Size</Label>
+          <span className="text-xs text-muted-foreground">{fontSize}pt</span>
+        </div>
+        <Slider
+          min={8}
+          max={14}
+          step={0.5}
+          value={[fontSize]}
+          onValueChange={([v]) => onFontSizeChange(v)}
+        />
       </div>
 
       {/* Fonts */}
